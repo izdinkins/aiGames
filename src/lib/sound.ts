@@ -1,4 +1,21 @@
+const MUTE_KEY = 'aiGames:muted'
+
 let audioCtx: AudioContext | null = null
+let muted = typeof window !== 'undefined' && window.localStorage.getItem(MUTE_KEY) === '1'
+
+function isMuted() {
+  return muted
+}
+
+function setMuted(value: boolean) {
+  muted = value
+  if (typeof window !== 'undefined') window.localStorage.setItem(MUTE_KEY, value ? '1' : '0')
+}
+
+function toggleMuted() {
+  setMuted(!muted)
+  return muted
+}
 
 function getContext(): AudioContext | null {
   if (typeof window === 'undefined') return null
@@ -22,6 +39,7 @@ interface BeepOptions {
 }
 
 function beep({ freq, duration, type = 'square', gain = 0.05, slideTo, delay = 0 }: BeepOptions) {
+  if (muted) return
   const ctx = getContext()
   if (!ctx) return
 
@@ -53,4 +71,7 @@ export const sound = {
     beep({ freq: 659.25, duration: 0.09, gain: 0.06, delay: 0.09 })
     beep({ freq: 783.99, duration: 0.16, gain: 0.06, delay: 0.18 })
   },
+  isMuted,
+  setMuted,
+  toggleMuted,
 }
