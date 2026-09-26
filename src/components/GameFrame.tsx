@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { RetroGrid } from '@/components/ui/retro-grid'
 import homeStyles from '../pages/Home.module.css'
 import styles from './GameFrame.module.css'
+import RoomAmbience from './RoomAmbience'
 
 interface GameFrameProps {
   title: string
@@ -13,6 +14,7 @@ interface GameFrameProps {
 export default function GameFrame({ title, subtitle, children }: GameFrameProps) {
   return (
     <div className="dark relative flex min-h-screen flex-col items-center justify-center gap-6 overflow-hidden bg-[radial-gradient(ellipse_120%_80%_at_50%_-10%,#171019,#0a070b_65%)] px-4 py-10">
+      <RoomAmbience />
       <div className={styles.frame}>
         <div className={homeStyles.bezel}>
           <span className={`${homeStyles.screw} ${homeStyles.screwTl}`} />
