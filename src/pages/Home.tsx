@@ -26,6 +26,29 @@ const BUTTON_CLASS: Record<ButtonColor, string> = {
   blue: styles.arcadeBtnBlue,
 }
 
+function SideArt({ label }: { label: string }) {
+  return (
+    <div className={styles.sideArt} aria-hidden="true">
+      <span className={`${styles.sideArtLabel} ${styles.pressStart}`}>{label}</span>
+      <div className={styles.speakerGrille}>
+        {Array.from({ length: 9 }).map((_, i) => (
+          <span key={i} className={styles.speakerDot} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function BaseVents() {
+  return (
+    <div className={styles.baseVents} aria-hidden="true">
+      {Array.from({ length: 10 }).map((_, i) => (
+        <span key={i} className={styles.baseVent} />
+      ))}
+    </div>
+  )
+}
+
 export default function Home() {
   const navigate = useNavigate()
   const [credits, setCredits] = useState(0)
@@ -76,90 +99,113 @@ export default function Home() {
           <p className={styles.marqueeSubtitle}>three games &middot; one opponent that never sleeps</p>
         </div>
 
-        <div className={styles.bezel}>
-          <span className={`${styles.screw} ${styles.screwTl}`} />
-          <span className={`${styles.screw} ${styles.screwTr}`} />
-          <span className={`${styles.screw} ${styles.screwBl}`} />
-          <span className={`${styles.screw} ${styles.screwBr}`} />
+        <div className={styles.cabinetBody}>
+          <SideArt label="AI ARCADE" />
 
-          <div className={styles.screen}>
-            <RetroGrid
-              className="absolute inset-0"
-              angle={60}
-              cellSize={36}
-              opacity={0.9}
-              lightLineColor="#63ffe4"
-              darkLineColor="#63ffe4"
-            />
-            <div className={styles.screenVignette} aria-hidden="true" />
-            <div className={styles.scanlines} aria-hidden="true" />
+          <div className={styles.columnWrap}>
+            <div className={styles.bezel}>
+              <span className={`${styles.screw} ${styles.screwTl}`} />
+              <span className={`${styles.screw} ${styles.screwTr}`} />
+              <span className={`${styles.screw} ${styles.screwBl}`} />
+              <span className={`${styles.screw} ${styles.screwBr}`} />
 
-            <div className={styles.screenContent}>
-              <div className={`${styles.screenHeading} ${styles.pressStart} ${warn ? styles.screenHeadingWarn : ''}`}>
-                {heading}
+              <div className={styles.screen}>
+                <RetroGrid
+                  className="absolute inset-0"
+                  angle={60}
+                  cellSize={36}
+                  opacity={0.9}
+                  lightLineColor="#63ffe4"
+                  darkLineColor="#63ffe4"
+                />
+                <div className={styles.screenVignette} aria-hidden="true" />
+                <div className={styles.scanlines} aria-hidden="true" />
+
+                <div className={styles.screenContent}>
+                  <div
+                    className={`${styles.screenHeading} ${styles.pressStart} ${warn ? styles.screenHeadingWarn : ''}`}
+                  >
+                    {heading}
+                  </div>
+
+                  <div className={styles.games}>
+                    {games.map((game) => {
+                      const isSelected = selectedKey === game.key
+                      return (
+                        <button
+                          key={game.key}
+                          type="button"
+                          onClick={() => handleSelect(game)}
+                          className={`${styles.gameTile} ${isSelected ? styles.gameTileSelected : ''}`}
+                        >
+                          <game.Icon />
+                          <span className={`${styles.tileName} ${styles.pressStart}`}>{game.name}</span>
+                          <span className={styles.tileTag}>{isSelected ? 'PRESS START' : ' '}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  <div className={styles.statusRow}>
+                    <span>CREDITS {String(credits).padStart(2, '0')}</span>
+                    <span>OPPONENT: MINIMAX AI</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.panel}>
+              <div className={styles.stick} aria-hidden="true">
+                <div className={styles.stickBall} />
+                <div className={styles.stickShaft} />
+                <div className={styles.stickBase} />
               </div>
 
-              <div className={styles.games}>
-                {games.map((game) => {
-                  const isSelected = selectedKey === game.key
-                  return (
-                    <button
-                      key={game.key}
-                      type="button"
-                      onClick={() => handleSelect(game)}
-                      className={`${styles.gameTile} ${isSelected ? styles.gameTileSelected : ''}`}
-                    >
-                      <game.Icon />
-                      <span className={`${styles.tileName} ${styles.pressStart}`}>{game.name}</span>
-                      <span className={styles.tileTag}>{isSelected ? 'PRESS START' : ' '}</span>
-                    </button>
-                  )
-                })}
+              <div className={styles.buttons} role="group" aria-label="Select a game">
+                {games.map((game) => (
+                  <button
+                    key={game.key}
+                    type="button"
+                    onClick={() => handleSelect(game)}
+                    className={`${styles.arcadeBtn} ${BUTTON_CLASS[game.btn]} ${styles.pressStart}`}
+                    aria-label={`Select ${game.name}`}
+                  >
+                    {game.btn === 'red' ? 'TTT' : game.btn === 'yellow' ? 'C4' : 'D&B'}
+                  </button>
+                ))}
               </div>
 
-              <div className={styles.statusRow}>
-                <span>CREDITS {String(credits).padStart(2, '0')}</span>
-                <span>OPPONENT: MINIMAX AI</span>
+              <div className={styles.coinDoor}>
+                <button
+                  type="button"
+                  onClick={handleInsertCoin}
+                  className={styles.coinButton}
+                  aria-label="Insert coin"
+                >
+                  <span className={styles.coinSlot} aria-hidden="true" />
+                  INSERT COIN
+                </button>
+                <span className={styles.creditReadout}>CREDIT&nbsp;{String(credits).padStart(2, '0')}</span>
+                {coinPulse > 0 && (
+                  <span key={coinPulse} className={`${styles.coinFlash} ${styles.coinFlashPlay}`} aria-hidden="true">
+                    +1
+                  </span>
+                )}
               </div>
             </div>
           </div>
+
+          <SideArt label="VS AI" />
         </div>
 
-        <div className={styles.panel}>
-          <div className={styles.stick} aria-hidden="true">
-            <div className={styles.stickBall} />
-            <div className={styles.stickShaft} />
-            <div className={styles.stickBase} />
-          </div>
-
-          <div className={styles.buttons} role="group" aria-label="Select a game">
-            {games.map((game) => (
-              <button
-                key={game.key}
-                type="button"
-                onClick={() => handleSelect(game)}
-                className={`${styles.arcadeBtn} ${BUTTON_CLASS[game.btn]} ${styles.pressStart}`}
-                aria-label={`Select ${game.name}`}
-              >
-                {game.btn === 'red' ? 'TTT' : game.btn === 'yellow' ? 'C4' : 'D&B'}
-              </button>
-            ))}
-          </div>
-
-          <div className={styles.coinDoor}>
-            <button type="button" onClick={handleInsertCoin} className={styles.coinButton} aria-label="Insert coin">
-              <span className={styles.coinSlot} aria-hidden="true" />
-              INSERT COIN
-            </button>
-            <span className={styles.creditReadout}>CREDIT&nbsp;{String(credits).padStart(2, '0')}</span>
-            {coinPulse > 0 && (
-              <span key={coinPulse} className={`${styles.coinFlash} ${styles.coinFlashPlay}`} aria-hidden="true">
-                +1
-              </span>
-            )}
-          </div>
+        <div className={styles.base}>
+          <BaseVents />
+          <span className={styles.baseTrim}>EST. 2026</span>
+          <BaseVents />
         </div>
       </div>
+
+      <div className={styles.groundShadow} aria-hidden="true" />
     </div>
   )
 }

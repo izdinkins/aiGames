@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import BootSequence from './components/BootSequence'
 import ConnectFour from './games/connect-four/ConnectFour'
 import DotsAndBoxes from './games/dots-and-boxes/DotsAndBoxes'
 import TicTacToe from './games/tic-tac-toe/TicTacToe'
@@ -7,6 +8,7 @@ import Home from './pages/Home'
 function App() {
   return (
     <BrowserRouter>
+      <BootSequence />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/tic-tac-toe" element={<TicTacToe />} />

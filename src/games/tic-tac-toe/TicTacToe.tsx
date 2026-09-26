@@ -1,16 +1,41 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import GameFrame from '@/components/GameFrame'
+import styles from './TicTacToe.module.css'
 
 type Cell = 'X' | 'O' | null
+type Player = 'X' | 'O'
 
-// Placeholder UI shell: local click state only, two human players.
-// Win detection and the AI opponent get wired in once engine.ts/ai.ts exist.
+const WIN_LINES = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6],
+]
+
+function getWinner(board: Cell[]): { player: Player; line: number[] } | null {
+  for (const line of WIN_LINES) {
+    const [a, b, c] = line
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      return { player: board[a] as Player, line }
+    }
+  }
+  return null
+}
+
 export default function TicTacToe() {
   const [board, setBoard] = useState<Cell[]>(Array(9).fill(null))
-  const [currentPlayer, setCurrentPlayer] = useState<'X' | 'O'>('X')
+  const [currentPlayer, setCurrentPlayer] = useState<Player>('X')
+
+  const result = getWinner(board)
+  const isDraw = !result && board.every((cell) => cell !== null)
+  const gameOver = result !== null || isDraw
 
   function handleCellClick(index: number) {
-    if (board[index] !== null) return
+    if (board[index] !== null || gameOver) return
 
     const nextBoard = [...board]
     nextBoard[index] = currentPlayer
@@ -23,37 +48,43 @@ export default function TicTacToe() {
     setCurrentPlayer('X')
   }
 
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-100 p-8">
-      <div className="flex flex-col items-center gap-4 rounded-xl bg-white p-8 shadow-lg">
-        <h1 className="text-2xl font-semibold text-slate-800">Tic Tac Toe</h1>
-        <p className="text-slate-500">Turn: {currentPlayer}</p>
+  const statusText = result ? `${result.player} WINS!` : isDraw ? 'DRAW GAME' : `TURN: ${currentPlayer}`
+  const statusClass = [
+    styles.status,
+    currentPlayer === 'O' && !result ? styles.statusO : '',
+    result?.player === 'O' ? styles.statusO : '',
+    gameOver ? styles.statusWin : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
-        <div className="grid grid-cols-3 gap-2">
-          {board.map((cell, index) => (
+  return (
+    <GameFrame title="TIC TAC TOE" subtitle="TWO PLAYER — AI OPPONENT COMING SOON">
+      <div className={statusClass}>{statusText}</div>
+
+      <div className={styles.board}>
+        {board.map((cell, index) => {
+          const isWinningCell = result?.line.includes(index) ?? false
+          return (
             <button
               key={index}
               type="button"
+              disabled={cell !== null || gameOver}
               onClick={() => handleCellClick(index)}
-              className="flex h-20 w-20 items-center justify-center rounded-lg bg-slate-100 text-3xl font-bold text-slate-800 transition hover:bg-slate-200"
+              className={[styles.cell, cell === 'O' ? styles.cellO : '', isWinningCell ? styles.cellWin : '']
+                .filter(Boolean)
+                .join(' ')}
+              aria-label={`Cell ${index + 1}${cell ? `, ${cell}` : ', empty'}`}
             >
               {cell}
             </button>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={handleReset}
-          className="rounded-lg bg-slate-800 px-4 py-2 text-white transition hover:bg-slate-700"
-        >
-          Reset
-        </button>
+          )
+        })}
       </div>
 
-      <Link to="/" className="text-slate-700 underline">
-        Back to games
-      </Link>
-    </div>
+      <button type="button" onClick={handleReset} className={styles.resetButton}>
+        {gameOver ? 'PLAY AGAIN' : 'RESET'}
+      </button>
+    </GameFrame>
   )
 }
