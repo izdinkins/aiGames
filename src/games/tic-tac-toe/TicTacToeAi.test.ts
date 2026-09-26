@@ -89,7 +89,7 @@ describe('Tic Tac Toe AI (TicTacToeAi)', () => {
     }
   });
 
-  it('minimax evaluates terminal states correctly', () => {
+  it('evaluates terminal states correctly', () => {
     const winBoard: Board = [
       'O', 'O', 'O',
       'X', 'X', null,
