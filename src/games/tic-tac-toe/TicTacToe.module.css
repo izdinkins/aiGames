@@ -1,0 +1,119 @@
+.status {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(11px, 3vw, 14px);
+  letter-spacing: 1px;
+  color: #63ffe4;
+  text-shadow: 0 0 6px rgba(99, 255, 228, 0.55);
+  min-height: 18px;
+  transition: color 0.2s;
+}
+
+.statusO {
+  color: #ffb648;
+  text-shadow: 0 0 6px rgba(255, 182, 72, 0.55);
+}
+
+.statusWin {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.cell {
+  appearance: none;
+  cursor: pointer;
+  width: clamp(64px, 18vw, 84px);
+  height: clamp(64px, 18vw, 84px);
+  border-radius: 6px;
+  background: rgba(99, 255, 228, 0.05);
+  border: 1px solid rgba(99, 255, 228, 0.18);
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(22px, 6vw, 30px);
+  color: #63ffe4;
+  text-shadow: 0 0 8px rgba(99, 255, 228, 0.6);
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.cell:disabled {
+  cursor: default;
+}
+
+.cell:not(:disabled):hover,
+.cell:focus-visible {
+  background: rgba(99, 255, 228, 0.12);
+  border-color: rgba(99, 255, 228, 0.6);
+}
+
+.cell:focus-visible {
+  outline: 2px solid #63ffe4;
+  outline-offset: 2px;
+}
+
+.cellO {
+  color: #ffb648;
+  text-shadow: 0 0 8px rgba(255, 182, 72, 0.6);
+}
+
+.cellWin {
+  background: rgba(99, 255, 228, 0.22);
+  border-color: #63ffe4;
+  animation: win-glow 1s ease-in-out infinite;
+}
+
+@keyframes win-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(99, 255, 228, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(99, 255, 228, 0.85);
+  }
+}
+
+.resetButton {
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid rgba(99, 255, 228, 0.4);
+  background: rgba(99, 255, 228, 0.08);
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #63ffe4;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.resetButton:hover,
+.resetButton:focus-visible {
+  background: rgba(99, 255, 228, 0.18);
+  border-color: #63ffe4;
+  transform: translateY(-1px);
+}
+
+.resetButton:focus-visible {
+  outline: 2px solid #63ffe4;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusWin,
+  .cellWin {
+    animation: none;
+    opacity: 1;
+  }
+}

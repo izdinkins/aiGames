@@ -1,0 +1,66 @@
+.page {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  overflow: hidden;
+  padding: 40px 16px;
+}
+
+.frame {
+  width: min(94vw, 640px);
+}
+
+.title {
+  text-align: center;
+  color: #63ffe4;
+  font-size: clamp(16px, 4.4vw, 22px);
+  text-shadow: 0 0 6px rgba(99, 255, 228, 0.55), 0 0 18px rgba(99, 255, 228, 0.25);
+  margin: 0;
+}
+
+.subtitle {
+  text-align: center;
+  margin: 8px 0 0;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: rgba(99, 255, 228, 0.7);
+}
+
+.body {
+  margin-top: clamp(14px, 3vw, 22px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.backButton {
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid rgba(99, 255, 228, 0.4);
+  background: rgba(99, 255, 228, 0.06);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-family: 'Chakra Petch', ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #63ffe4;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.backButton:hover,
+.backButton:focus-visible {
+  background: rgba(99, 255, 228, 0.14);
+  border-color: rgba(99, 255, 228, 0.8);
+  transform: translateY(-1px);
+}
+
+.backButton:focus-visible {
+  outline: 2px solid #63ffe4;
+  outline-offset: 2px;
+}
