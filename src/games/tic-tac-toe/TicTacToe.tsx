@@ -1,40 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import GameFrame from '@/components/GameFrame'
 import { sound } from '@/lib/sound'
+import { applyMove, checkWinner, createInitialBoard, type Board, type Player } from './engine'
+import { getBestMove, type Difficulty } from './TicTacToeAi'
 import styles from './TicTacToe.module.css'
 
-type Cell = 'X' | 'O' | null
-type Player = 'X' | 'O'
+const AI_MOVE_DELAY_MS = 500
 
-const WIN_LINES = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6],
-]
-
-function getWinner(board: Cell[]): { player: Player; line: number[] } | null {
-  for (const line of WIN_LINES) {
-    const [a, b, c] = line
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      return { player: board[a] as Player, line }
-    }
-  }
-  return null
-}
+const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard']
 
 export default function TicTacToe() {
-  const [board, setBoard] = useState<Cell[]>(Array(9).fill(null))
+  const [board, setBoard] = useState<Board>(createInitialBoard)
   const [currentPlayer, setCurrentPlayer] = useState<Player>('X')
-
-  const result = getWinner(board)
-  const isDraw = !result && board.every((cell) => cell !== null)
-  const gameOver = result !== null || isDraw
+  const [difficulty, setDifficulty] = useState<Difficulty>('hard')
+  const [aiThinking, setAiThinking] = useState(false)
   const isFirstRender = useRef(true)
+
+  const result = checkWinner(board)
+  const gameOver = result.winner !== null
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -44,44 +27,91 @@ export default function TicTacToe() {
     if (gameOver) sound.start()
   }, [gameOver])
 
+  useEffect(() => {
+    if (gameOver || currentPlayer !== 'O') return
+
+    setAiThinking(true)
+    const timeout = window.setTimeout(() => {
+      const move = getBestMove(board, 'O', difficulty)
+      if (move !== null) {
+        sound.click()
+        setBoard(applyMove(board, move, 'O'))
+        setCurrentPlayer('X')
+      }
+      setAiThinking(false)
+    }, AI_MOVE_DELAY_MS)
+
+    return () => window.clearTimeout(timeout)
+  }, [board, currentPlayer, gameOver, difficulty])
+
   function handleCellClick(index: number) {
-    if (board[index] !== null || gameOver) return
+    if (gameOver || board[index] !== null || currentPlayer !== 'X' || aiThinking) return
 
     sound.click()
-    const nextBoard = [...board]
-    nextBoard[index] = currentPlayer
-    setBoard(nextBoard)
-    setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X')
+    setBoard(applyMove(board, index, 'X'))
+    setCurrentPlayer('O')
   }
 
   function handleReset() {
     sound.click()
-    setBoard(Array(9).fill(null))
+    setBoard(createInitialBoard())
     setCurrentPlayer('X')
+    setAiThinking(false)
   }
 
-  const statusText = result ? `${result.player} WINS!` : isDraw ? 'DRAW GAME' : `TURN: ${currentPlayer}`
+  function handleDifficultyChange(next: Difficulty) {
+    if (next === difficulty) return
+    sound.click()
+    setDifficulty(next)
+    setBoard(createInitialBoard())
+    setCurrentPlayer('X')
+    setAiThinking(false)
+  }
+
+  const statusText = gameOver
+    ? result.winner === 'draw'
+      ? 'DRAW GAME'
+      : result.winner === 'X'
+        ? 'YOU WIN!'
+        : 'AI WINS!'
+    : currentPlayer === 'X'
+      ? 'YOUR TURN'
+      : 'AI THINKING...'
+
   const statusClass = [
     styles.status,
-    currentPlayer === 'O' && !result ? styles.statusO : '',
-    result?.player === 'O' ? styles.statusO : '',
+    currentPlayer === 'O' && !gameOver ? styles.statusO : '',
+    result.winner === 'O' ? styles.statusO : '',
     gameOver ? styles.statusWin : '',
   ]
     .filter(Boolean)
     .join(' ')
 
   return (
-    <GameFrame title="TIC TAC TOE" subtitle="TWO PLAYER — AI OPPONENT COMING SOON">
+    <GameFrame title="TIC TAC TOE" subtitle="YOU (X) VS THE MINIMAX AI (O)">
+      <div className={styles.difficultyRow} role="group" aria-label="Difficulty">
+        {DIFFICULTIES.map((level) => (
+          <button
+            key={level}
+            type="button"
+            onClick={() => handleDifficultyChange(level)}
+            className={`${styles.difficultyButton} ${difficulty === level ? styles.difficultyButtonActive : ''}`}
+          >
+            {level.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
       <div className={statusClass}>{statusText}</div>
 
       <div className={styles.board}>
         {board.map((cell, index) => {
-          const isWinningCell = result?.line.includes(index) ?? false
+          const isWinningCell = result.line?.includes(index) ?? false
           return (
             <button
               key={index}
               type="button"
-              disabled={cell !== null || gameOver}
+              disabled={cell !== null || gameOver || currentPlayer !== 'X' || aiThinking}
               onClick={() => handleCellClick(index)}
               className={[styles.cell, cell === 'O' ? styles.cellO : '', isWinningCell ? styles.cellWin : '']
                 .filter(Boolean)

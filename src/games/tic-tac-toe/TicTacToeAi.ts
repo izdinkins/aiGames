@@ -25,14 +25,18 @@ export function minimax(
 
   if (result.winner !== null) {
     if (result.winner === aiPlayer) {
-      // AI won: sooner is better
-      return { score: 10 - depth, move: null };
+      // AI won: sooner is better. `depth` is the *remaining* search budget, so a
+      // win found higher up the tree (less depth consumed) has a larger `depth`
+      // here and must score higher — i.e. this term must grow with `depth`.
+      return { score: 10 + depth, move: null };
     }
     if (result.winner === 'draw') {
       return { score: 0, move: null };
     }
-    // Opponent won: later is better
-    return { score: -10 + depth, move: null };
+    // Opponent won: later is better. Same reasoning in reverse — a loss found
+    // deeper in the tree (more depth consumed, smaller `depth` here) should be
+    // penalized less, so this term must also grow with `depth`.
+    return { score: -10 - depth, move: null };
   }
 
   if (depth === 0) {
