@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import GameFrame from '@/components/GameFrame'
+import { sound } from '@/lib/sound'
 import styles from './DotsAndBoxes.module.css'
 
 const SIZE = 4 // dots per side
@@ -18,11 +19,41 @@ export default function DotsAndBoxes() {
   const [vEdges, setVEdges] = useState<boolean[][]>(emptyV)
 
   function toggleH(row: number, col: number) {
-    setHEdges((prev) => prev.map((r, ri) => (ri === row ? r.map((v, ci) => (ci === col ? !v : v)) : r)))
+    const willDraw = !hEdges[row][col]
+    const nextH = hEdges.map((r, ri) => (ri === row ? r.map((v, ci) => (ci === col ? !v : v)) : r))
+    setHEdges(nextH)
+
+    if (!willDraw) {
+      sound.click()
+      return
+    }
+
+    const affectedBoxes: Array<[number, number]> = []
+    if (row - 1 >= 0) affectedBoxes.push([row - 1, col])
+    if (row < N) affectedBoxes.push([row, col])
+    const completed = affectedBoxes.some(
+      ([r, c]) => nextH[r][c] && nextH[r + 1][c] && vEdges[r][c] && vEdges[r][c + 1],
+    )
+    sound[completed ? 'select' : 'click']()
   }
 
   function toggleV(row: number, col: number) {
-    setVEdges((prev) => prev.map((r, ri) => (ri === row ? r.map((v, ci) => (ci === col ? !v : v)) : r)))
+    const willDraw = !vEdges[row][col]
+    const nextV = vEdges.map((r, ri) => (ri === row ? r.map((v, ci) => (ci === col ? !v : v)) : r))
+    setVEdges(nextV)
+
+    if (!willDraw) {
+      sound.click()
+      return
+    }
+
+    const affectedBoxes: Array<[number, number]> = []
+    if (col - 1 >= 0) affectedBoxes.push([row, col - 1])
+    if (col < N) affectedBoxes.push([row, col])
+    const completed = affectedBoxes.some(
+      ([r, c]) => hEdges[r][c] && hEdges[r + 1][c] && nextV[r][c] && nextV[r][c + 1],
+    )
+    sound[completed ? 'select' : 'click']()
   }
 
   function isBoxFilled(row: number, col: number) {
@@ -30,6 +61,7 @@ export default function DotsAndBoxes() {
   }
 
   function handleClear() {
+    sound.click()
     setHEdges(emptyH())
     setVEdges(emptyV())
   }

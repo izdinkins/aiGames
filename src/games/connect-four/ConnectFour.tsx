@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import GameFrame from '@/components/GameFrame'
+import { sound } from '@/lib/sound'
 import styles from './ConnectFour.module.css'
 
 type Disc = 'red' | 'yellow' | null
@@ -19,6 +20,7 @@ export default function ConnectFour() {
     const nextGrid = grid.map((row) => [...row])
     for (let row = ROWS - 1; row >= 0; row--) {
       if (nextGrid[row][col] === null) {
+        sound.click()
         nextGrid[row][col] = current
         setGrid(nextGrid)
         setCurrent(current === 'red' ? 'yellow' : 'red')
@@ -28,6 +30,7 @@ export default function ConnectFour() {
   }
 
   function handleClear() {
+    sound.click()
     setGrid(emptyGrid())
     setCurrent('red')
   }

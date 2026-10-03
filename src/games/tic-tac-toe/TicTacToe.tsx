@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import GameFrame from '@/components/GameFrame'
+import { sound } from '@/lib/sound'
 import styles from './TicTacToe.module.css'
 
 type Cell = 'X' | 'O' | null
@@ -33,10 +34,20 @@ export default function TicTacToe() {
   const result = getWinner(board)
   const isDraw = !result && board.every((cell) => cell !== null)
   const gameOver = result !== null || isDraw
+  const isFirstRender = useRef(true)
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    if (gameOver) sound.start()
+  }, [gameOver])
 
   function handleCellClick(index: number) {
     if (board[index] !== null || gameOver) return
 
+    sound.click()
     const nextBoard = [...board]
     nextBoard[index] = currentPlayer
     setBoard(nextBoard)
@@ -44,6 +55,7 @@ export default function TicTacToe() {
   }
 
   function handleReset() {
+    sound.click()
     setBoard(Array(9).fill(null))
     setCurrentPlayer('X')
   }

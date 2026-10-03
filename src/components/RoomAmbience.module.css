@@ -1,0 +1,10 @@
+.ambience {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 42% 32% at 14% 18%, rgba(99, 255, 228, 0.12), transparent 70%),
+    radial-gradient(ellipse 42% 32% at 86% 14%, rgba(255, 95, 118, 0.1), transparent 70%),
+    radial-gradient(ellipse 60% 25% at 50% 100%, rgba(255, 182, 72, 0.06), transparent 75%);
+}

@@ -1,0 +1,41 @@
+.flash {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(99, 255, 228, 0.28), rgba(2, 5, 4, 0.85) 55%);
+  mix-blend-mode: screen;
+  animation: flash-fade 420ms ease-out forwards;
+}
+
+.flash::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: #9dffee;
+  box-shadow: 0 0 24px 8px rgba(99, 255, 228, 0.75);
+  animation: flash-sweep 420ms ease-out forwards;
+}
+
+@keyframes flash-fade {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes flash-sweep {
+  0% {
+    top: -5px;
+  }
+  100% {
+    top: 100%;
+  }
+}
