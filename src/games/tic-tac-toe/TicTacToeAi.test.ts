@@ -96,7 +96,7 @@ describe('Tic Tac Toe AI (TicTacToeAi)', () => {
       null, null, null,
     ];
     const winResult = minimax(winBoard, 5, true, 'O');
-    expect(winResult.score).toBe(10 - 5); // 5
+    expect(winResult.score).toBe(10 + 5); // 15
 
     const lossBoard: Board = [
       'X', 'X', 'X',
@@ -104,7 +104,7 @@ describe('Tic Tac Toe AI (TicTacToeAi)', () => {
       null, null, null,
     ];
     const lossResult = minimax(lossBoard, 4, false, 'O');
-    expect(lossResult.score).toBe(-10 + 4); // -6
+    expect(lossResult.score).toBe(-10 - 4); // -14
   });
 });
 
