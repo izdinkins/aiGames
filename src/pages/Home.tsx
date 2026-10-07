@@ -2,7 +2,9 @@ import { useEffect, useRef, useState, type ReactElement } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RetroGrid } from '@/components/ui/retro-grid'
 import { useTilt } from '@/hooks/useTilt'
+import { getTopScores } from '@/lib/highScores'
 import { sound } from '@/lib/sound'
+import { isTiltEnabled, setTiltEnabled } from '@/lib/tiltPreference'
 import RoomAmbience from '../components/RoomAmbience'
 import styles from './Home.module.css'
 import { ConnectFourIcon, DotsAndBoxesIcon, TicTacToeIcon } from './home-icons'
@@ -28,12 +30,6 @@ const BUTTON_CLASS: Record<ButtonColor, string> = {
   yellow: styles.arcadeBtnYellow,
   blue: styles.arcadeBtnBlue,
 }
-
-const HIGH_SCORES = [
-  { name: 'AAA', score: 990000 },
-  { name: 'CPU', score: 742000 },
-  { name: 'YOU', score: 0 },
-]
 
 const IDLE_MS = 15000
 const ATTRACT_CYCLE_MS = 4000
@@ -63,7 +59,8 @@ function BaseVents() {
 
 export default function Home() {
   const navigate = useNavigate()
-  const tilt = useTilt(5)
+  const [tiltEnabled, setTiltEnabledState] = useState(isTiltEnabled)
+  const tilt = useTilt(5, tiltEnabled)
   const [credits, setCredits] = useState(0)
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
   const [warn, setWarn] = useState(false)
@@ -132,17 +129,35 @@ export default function Home() {
     setCoinPulse((p) => p + 1)
   }
 
+  function handleToggleTilt() {
+    sound.click()
+    const next = !tiltEnabled
+    setTiltEnabledState(next)
+    setTiltEnabled(next)
+  }
+
   const heading = warn ? 'INSERT COIN TO PLAY' : selectedKey ? 'PRESS START' : 'SELECT YOUR GAME'
+  const topScores = attractMode ? getTopScores(3) : []
 
   return (
     <div className="dark relative flex min-h-screen flex-col items-center justify-center gap-8 overflow-hidden bg-[radial-gradient(ellipse_120%_80%_at_50%_-10%,#171019,#0a070b_65%)] px-4 py-10">
       <RoomAmbience />
 
+      <button
+        type="button"
+        onClick={handleToggleTilt}
+        className={styles.tiltToggle}
+        aria-pressed={tiltEnabled}
+        aria-label={tiltEnabled ? 'Disable cabinet tilt' : 'Enable cabinet tilt'}
+      >
+        {tiltEnabled ? 'TILT ON' : 'TILT OFF'}
+      </button>
+
       <div ref={tilt.ref} style={tilt.style} className={styles.cabinet}>
         <div className={styles.marquee}>
           <div className={styles.bulbs} aria-hidden="true">
             {Array.from({ length: 10 }).map((_, i) => (
-              <span key={i} className={styles.bulb} />
+              <span key={i} className={styles.bulb} style={{ animationDelay: `${i * 160}ms` }} />
             ))}
           </div>
           <h1 className={`${styles.marqueeTitle} ${styles.pressStart}`}>AI ARCADE</h1>
@@ -169,6 +184,7 @@ export default function Home() {
                   darkLineColor="#63ffe4"
                 />
                 <div className={styles.screenVignette} aria-hidden="true" />
+                <div className={styles.screenGlass} aria-hidden="true" />
                 <div className={styles.scanlines} aria-hidden="true" />
 
                 {attractMode ? (
@@ -176,14 +192,18 @@ export default function Home() {
                     {attractPanel === 'scores' ? (
                       <div className={styles.attractPanel}>
                         <div className={`${styles.attractHeading} ${styles.pressStart}`}>HIGH SCORES</div>
-                        {HIGH_SCORES.map((entry, i) => (
-                          <div key={entry.name} className={styles.scoreRow}>
-                            <span>
-                              {i + 1}. {entry.name}
-                            </span>
-                            <span>{String(entry.score).padStart(7, '0')}</span>
-                          </div>
-                        ))}
+                        {topScores.length > 0 ? (
+                          topScores.map((entry, i) => (
+                            <div key={`${entry.initials}-${entry.date}`} className={styles.scoreRow}>
+                              <span>
+                                {i + 1}. {entry.initials}
+                              </span>
+                              <span>{String(entry.score).padStart(7, '0')}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className={styles.attractText}>NO SCORES YET</p>
+                        )}
                       </div>
                     ) : (
                       <div className={styles.attractPanel}>

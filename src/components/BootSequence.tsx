@@ -93,7 +93,7 @@ export default function BootSequence() {
           <div className={homeStyles.marquee}>
             <div className={homeStyles.bulbs} aria-hidden="true">
               {Array.from({ length: 10 }).map((_, i) => (
-                <span key={i} className={homeStyles.bulb} />
+                <span key={i} className={homeStyles.bulb} style={{ animationDelay: `${i * 160}ms` }} />
               ))}
             </div>
             <h1 className={`${homeStyles.marqueeTitle} ${homeStyles.pressStart}`}>AI ARCADE</h1>
@@ -113,6 +113,7 @@ export default function BootSequence() {
                 <div className={homeStyles.screen}>
                   <div className={styles.staticGrid} aria-hidden="true" />
                   <div className={homeStyles.screenVignette} aria-hidden="true" />
+                  <div className={homeStyles.screenGlass} aria-hidden="true" />
                   <div className={homeStyles.scanlines} aria-hidden="true" />
 
                   <div className={homeStyles.screenContent}>
