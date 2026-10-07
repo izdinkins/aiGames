@@ -4,6 +4,7 @@ import { RetroGrid } from '@/components/ui/retro-grid'
 import { useTilt } from '@/hooks/useTilt'
 import { getTopScores } from '@/lib/highScores'
 import { sound } from '@/lib/sound'
+import { isTiltEnabled, setTiltEnabled } from '@/lib/tiltPreference'
 import RoomAmbience from '../components/RoomAmbience'
 import styles from './Home.module.css'
 import { ConnectFourIcon, DotsAndBoxesIcon, TicTacToeIcon } from './home-icons'
@@ -58,7 +59,8 @@ function BaseVents() {
 
 export default function Home() {
   const navigate = useNavigate()
-  const tilt = useTilt(5)
+  const [tiltEnabled, setTiltEnabledState] = useState(isTiltEnabled)
+  const tilt = useTilt(5, tiltEnabled)
   const [credits, setCredits] = useState(0)
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
   const [warn, setWarn] = useState(false)
@@ -127,12 +129,29 @@ export default function Home() {
     setCoinPulse((p) => p + 1)
   }
 
+  function handleToggleTilt() {
+    sound.click()
+    const next = !tiltEnabled
+    setTiltEnabledState(next)
+    setTiltEnabled(next)
+  }
+
   const heading = warn ? 'INSERT COIN TO PLAY' : selectedKey ? 'PRESS START' : 'SELECT YOUR GAME'
   const topScores = attractMode ? getTopScores(3) : []
 
   return (
     <div className="dark relative flex min-h-screen flex-col items-center justify-center gap-8 overflow-hidden bg-[radial-gradient(ellipse_120%_80%_at_50%_-10%,#171019,#0a070b_65%)] px-4 py-10">
       <RoomAmbience />
+
+      <button
+        type="button"
+        onClick={handleToggleTilt}
+        className={styles.tiltToggle}
+        aria-pressed={tiltEnabled}
+        aria-label={tiltEnabled ? 'Disable cabinet tilt' : 'Enable cabinet tilt'}
+      >
+        {tiltEnabled ? 'TILT ON' : 'TILT OFF'}
+      </button>
 
       <div ref={tilt.ref} style={tilt.style} className={styles.cabinet}>
         <div className={styles.marquee}>

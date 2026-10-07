@@ -1,7 +1,7 @@
 .toggle {
   position: fixed;
   top: max(16px, env(safe-area-inset-top, 0px));
-  right: 16px;
+  right: max(16px, env(safe-area-inset-right, 0px));
   z-index: 50;
   appearance: none;
   cursor: pointer;
