@@ -32,6 +32,7 @@ export default function GameFrame({ title, subtitle, children }: GameFrameProps)
               darkLineColor="#63ffe4"
             />
             <div className={homeStyles.screenVignette} aria-hidden="true" />
+            <div className={homeStyles.screenGlass} aria-hidden="true" />
             <div className={homeStyles.scanlines} aria-hidden="true" />
 
             <div className={homeStyles.screenContent}>

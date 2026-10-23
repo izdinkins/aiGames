@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-export function useTilt(maxDegrees = 6) {
+const REST_TRANSFORM = 'perspective(1200px) rotateX(0deg) rotateY(0deg)'
+
+export function useTilt(maxDegrees = 6, enabled = true) {
   const ref = useRef<HTMLDivElement>(null)
-  const [style, setStyle] = useState<CSSProperties>({
-    transform: 'perspective(1200px) rotateX(0deg) rotateY(0deg)',
-  })
+  const [style, setStyle] = useState<CSSProperties>({ transform: REST_TRANSFORM })
 
   useEffect(() => {
+    if (!enabled) {
+      setStyle({ transform: REST_TRANSFORM })
+      return
+    }
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     function handleMove(event: MouseEvent) {
@@ -23,7 +27,7 @@ export function useTilt(maxDegrees = 6) {
     }
 
     function handleLeave() {
-      setStyle({ transform: 'perspective(1200px) rotateX(0deg) rotateY(0deg)' })
+      setStyle({ transform: REST_TRANSFORM })
     }
 
     window.addEventListener('mousemove', handleMove)
@@ -32,7 +36,7 @@ export function useTilt(maxDegrees = 6) {
       window.removeEventListener('mousemove', handleMove)
       window.removeEventListener('mouseleave', handleLeave)
     }
-  }, [maxDegrees])
+  }, [maxDegrees, enabled])
 
   return { ref, style }
 }
