@@ -200,9 +200,8 @@ export function getScores(board: Board): Record<string, number> {
   }
   return scores;
 }
-/**
- * Returns the score for a specific player.
- */
+
+//Returns the score for a specific player.
 export function getPlayerScore(board: Board, player: Player): number {
   return getScores(board)[player] ?? 0;
 }
@@ -248,9 +247,11 @@ export function applyMove(board: Board, move: Move, player?: Player): Board {
  * Checks if the game has ended and returns the winner or draw.
  */
 export function checkWinner(board: Board): GameResult {
+  
   const scores = getScores(board);
   const totalBoxes = board.rows * board.cols;
   const claimedBoxes = Object.values(scores).reduce((sum, s) => sum + s, 0);
+  
   // If there are still boxes to be claimed and moves left, the game is ongoing
   if (claimedBoxes < totalBoxes && getLegalMoves(board).length > 0) {
     return { winner: null, scores };

@@ -16,7 +16,7 @@ import {
   getLegalMoves,
   getOpponent,
   getPlayerScore,
-  getScores,
+ // getScores,
   isBoxCompleted,
   isGameOver,
   isValidMove,
