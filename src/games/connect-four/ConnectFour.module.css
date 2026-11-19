@@ -1,3 +1,7 @@
+.boardWrap {
+  position: relative;
+}
+
 .board {
   display: flex;
   gap: 4px;
@@ -54,50 +58,29 @@
   box-shadow: 0 0 10px rgba(240, 195, 63, 0.6);
 }
 
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+.cellLast {
+  outline: 2px solid rgba(255, 255, 255, 0.55);
+  outline-offset: 1px;
 }
 
-.turnLabel {
-  font-family: 'Chakra Petch', ui-sans-serif, system-ui, sans-serif;
-  font-size: 12px;
-  letter-spacing: 1px;
-  color: rgba(99, 255, 228, 0.75);
-}
-
-.turnDot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin-left: 6px;
-  vertical-align: -1px;
-}
-
-.clearButton {
-  appearance: none;
-  cursor: pointer;
-  border: 1px solid rgba(99, 255, 228, 0.4);
-  background: rgba(99, 255, 228, 0.08);
-  border-radius: 999px;
-  padding: 8px 20px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
-  letter-spacing: 1px;
-  color: #63ffe4;
-  transition: background 0.15s, border-color 0.15s, transform 0.15s;
-}
-
-.clearButton:hover,
-.clearButton:focus-visible {
-  background: rgba(99, 255, 228, 0.18);
-  border-color: #63ffe4;
-  transform: translateY(-1px);
-}
-
-.clearButton:focus-visible {
+.cellWin {
   outline: 2px solid #63ffe4;
-  outline-offset: 2px;
+  outline-offset: 1px;
+  animation: win-glow 1s ease-in-out infinite;
+}
+
+@keyframes win-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(99, 255, 228, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(99, 255, 228, 0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cellWin {
+    animation: none;
+  }
 }

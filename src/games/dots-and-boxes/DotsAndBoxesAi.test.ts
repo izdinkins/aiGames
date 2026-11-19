@@ -80,7 +80,6 @@ describe('Dots and Boxes AI (DotsAndBoxesAi)', () => {
         board = applyMove(board, { type: 'horizontal', row: 0, col: 0 });
         board = applyMove(board, { type: 'vertical', row: 0, col: 0 });
         board = applyMove(board, { type: 'vertical', row: 0, col: 1 });
-        board = applyMove(board, { type: 'horizontal', row: 1, col: 0 });
 
         const move = getBestMove(board, 'player2', 'hard');
         expect(move).not.toBeNull();
